@@ -4,6 +4,7 @@ import './index.css'
 import Home from "./views/Homepage";
 import Register from "./views/Register";
 import Login from "./views/Login";
+import QuizCategory from "./views/QuizCategory";
 const App = () => {
   return ( 
     <Router>
@@ -11,7 +12,7 @@ const App = () => {
         <Route path="/" element = { <Home /> } />
         <Route path="/login" element = { <Login /> } />
         <Route path="/signup" element = { <Register /> } />
-        {/* <Route path="/categories" element = { <Categories /> } /> */}
+        <Route path="/categories" element = { <QuizCategory /> } />
       </Routes>
     </Router>
    );

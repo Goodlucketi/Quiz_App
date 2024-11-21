@@ -12,3 +12,7 @@ body{
   background: url('./assets/images/tech.jpg') no-repeat;
   background-size: cover;
 }
+
+input:checked+.label{
+  background: #033b0f;
+}
