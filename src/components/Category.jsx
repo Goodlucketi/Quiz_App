@@ -1,7 +1,7 @@
 const Category = ({ title, beginner, intermediate, expert, pro }) => {
     return ( 
         <div className="category">
-            <div className="category-data p-5 shadow-lg text-center hover:scale-105 duration-500 transition-all rounded-xl bg-slate-50/60 ">
+            <div className="category-data p-5 shadow-lg text-center hover:scale-105 duration-500 transition-all rounded-xl bg-slate-50/90 ">
                 <h2 className="p-2 text-2xl font-bold">{title}</h2>
                 <p className="py-2 text-lg text-green-700">Select Difficulty Level</p>
                 <form>
