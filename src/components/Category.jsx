@@ -3,7 +3,7 @@ const Category = ({ title, beginner, intermediate, expert, pro }) => {
         <div className="category">
             <div className="category-data p-5 shadow-lg text-center hover:scale-105 duration-500 transition-all rounded-xl bg-slate-50/90 ">
                 <h2 className="p-2 text-2xl font-bold">{title}</h2>
-                <p className="py-2 text-lg text-green-700">Select Difficulty Level</p>
+                <p className="py-2 text-lg text-slate-700">Select Difficulty Level</p>
                 <form>
                     <div className="difficulty grid grid-cols-2 gap-x-3"> 
                         <div className="my-1">
