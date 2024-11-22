@@ -1,5 +1,6 @@
 import Category from "../components/Category";
 import AuthNavbar from "../components/AuthNavbar";
+import Footer from "../components/Footer";
 
 const QuizCategory = () => {
     return ( 
@@ -26,7 +27,7 @@ const QuizCategory = () => {
                         title="PHP" />
                 </div>
             </section>
-            
+            <Footer />
         </main>
      );
 }

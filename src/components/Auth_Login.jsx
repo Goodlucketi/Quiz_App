@@ -1,21 +1,89 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
 const Auth_Login = () => {
+    const [formData, setFormData] = useState({
+        player_username:'',
+        player_password:''
+    })
+    const[loading, setLoading]=useState(false)
+    const[error, setError]=useState(null)
+
+    const handleInputChange = (e)=>{
+        const {name, value} = e.target
+        setFormData({...formData, [name]:value})
+    }
+
+    const handleLogin = async (e)=>{
+        e.preventDefault()
+        setLoading(true)
+        if(!formData.player_username || formData.player_password){
+            setError("Please fill all Fields")
+            setLoading(false)
+            setTimeout(()=>{
+                setError("")   
+            }, 5000)
+            return
+        }
+        
+        try {
+            const response = await fetch('/', {
+                method:'POST',
+                headers:{
+                    "Content-Type":'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+
+            if(!response){
+                throw new Error("Failed to Register, Try Again");     
+            } 
+            const data = await response.json()
+            alert("Registration Successful", )
+
+        } catch (error) {
+            console.error("Error", error.message)
+        } finally{
+            setLoading(false)
+        }   
+    }
     return ( 
         <main className="signup-form h-screen">
             <div className="w-11/12 mx-auto p-4 py-20 md:py-32">
-                <form className="signUp bg-slate-50/70 md:w-5/12 mx-auto shadow-lg rounded-xl px-8 py-10 mt-10">
-                    <h2 className="text-center text-3xl font-bold text-blue-800">Login</h2>
-                    
-                    <div className="my-4">
-                        <input className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" type="text" name="player_email" id="player_email" placeholder="Username / Email" />
+                <form onSubmit={handleLogin} className="signUp bg-slate-50/70 md:w-5/12 mx-auto shadow-lg rounded-xl md:px-8 py-10 mt-10">
+                    <h2 className="text-center my-5 text-3xl font-bold text-blue-800">Login</h2>
+                    {error && (
+                        <p className="text-red-600 text-center mt-2 font-mono">{error}</p>
+                    )}
+                    <div className="mb-4">
+                        <input 
+                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" 
+                            type="text" 
+                            name="player_username" id="player_username" 
+                            placeholder="Username /"
+                            value={formData.player_username}
+                            onChange={handleInputChange}
+                        />
                     </div>
                     
                     <div className="my-4">
-                        <input className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" type="password" name="player_password" id="player_password" placeholder="Password" />
+                        <input 
+                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" 
+                            type="password" 
+                            name="player_password" id="player_password" 
+                            placeholder="Password"
+                            value={formData.player_password}
+                            onChange={handleInputChange}
+                        />
                     </div>
 
                     <div className="my-4">
-                        <input className="bg-blue-800 text-white hover:bg-blue-600 duration-500 transition-all border-2 p-3 rounded-lg shadow-sm w-full" type="submit" value="LOGIN"/>
+                        <button 
+                            className={`${loading?"opacity-50 cursor-not-allowed Up...":""} bg-blue-800 text-white hover:bg-blue-600 duration-500 transition-all border-2 p-3 rounded-lg shadow-sm w-full`} 
+                            type="submit" 
+                            disabled={loading}>
+                                {loading?"Loggin In...":"LOGIN"}
+                        </button>
                     </div>
                     <p className="text-center">Don't have Account? <Link className="text-blue-800" to="/signup">Sign Up</Link></p>
                 </form>
