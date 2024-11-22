@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 const Auth_Login = () => {
     return ( 
         <main className="signup-form h-screen">
-            <div className="w-11/12 mx-auto p-4 py-32">
+            <div className="w-11/12 mx-auto p-4 py-20 md:py-32">
                 <form className="signUp bg-slate-50/70 md:w-5/12 mx-auto shadow-lg rounded-xl px-8 py-10 mt-10">
                     <h2 className="text-center text-3xl font-bold text-blue-800">Login</h2>
                     

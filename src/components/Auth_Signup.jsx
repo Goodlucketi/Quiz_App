@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const Signup = () => {
     return ( 
         <main className="signup-form h-screen">
-            <div className="w-11/12 mx-auto p-4 py-20">
+            <div className="w-11/12 mx-auto p-4 md:py-20">
                 <form className="signUp bg-slate-50/70 md:w-5/12 mx-auto shadow-lg rounded-xl px-8 py-10 mt-10">
                     <h2 className="text-center text-3xl font-bold text-blue-800">Sign Up</h2>
                     <div className="my-4">
