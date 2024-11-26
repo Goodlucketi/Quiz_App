@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ const Signup = () => {
     })
     const[loading, setLoading]=useState(false)
     const[error, setError]=useState(null)
+    const[success, setSuccess]=useState(null)
+    const navigate = useNavigate()
 
     const handleInputChange = (e)=>{
         const {name, value} = e.target
@@ -19,7 +22,7 @@ const Signup = () => {
     const handleSignUp = async (e)=>{
         e.preventDefault()
         setLoading(true)
-        if(!formData.player_name || !formData.player_email || !formData.player_username || formData.player_password){
+        if(!formData.player_name || !formData.player_email || !formData.player_username || !formData.player_password){
             setError("Please fill all Fields")
             setLoading(false)
             setTimeout(()=>{
@@ -29,7 +32,7 @@ const Signup = () => {
         }
         
         try {
-            const response = await fetch('/', {
+            const response = await fetch('http://localhost:3000/auth/signup', {
                 method:'POST',
                 headers:{
                     "Content-Type":'application/json',
@@ -37,12 +40,28 @@ const Signup = () => {
                 body: JSON.stringify(formData)
             })
 
+            
             if(!response){
-                throw new Error("Failed to Register, Try Again");     
+                throw new Error("Failed to Register, Try Again"); 
+                return
+                setLoading(false) 
             }
             
             const data = await response.json()
-            alert("Registration Successful", )
+            if(data){
+              setSuccess(data.message)
+                setFormData({
+                    player_name:'',
+                    player_email:'',
+                    player_username:'',
+                    player_password:''
+                })
+                setTimeout(()=>{
+                    navigate('/login')
+                    setSuccess(null)
+                }, 3000)  
+            }
+            
 
         } catch (error) {
             console.error("Error", error.message)
@@ -58,6 +77,9 @@ const Signup = () => {
                     <h2 className="text-center text-3xl my-5 font-bold text-blue-800">Sign Up</h2>
                     {error && (
                         <p className="text-red-600 text-center mt-2 font-mono">{error}</p>
+                    )}
+                    {success && (
+                        <p className="text-green-600 text-center mt-2 font-mono">{success}</p>
                     )}
                     <div className="mb-4">
                         <input 

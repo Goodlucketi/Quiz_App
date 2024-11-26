@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
    const [navMenu, setNavMenu] = useState(false)
+   const location = useLocation()
 
    const navToggle = ()=>{
         setNavMenu(!navMenu)        
    }
+
+   useEffect(()=>{
+    setNavMenu(false)
+   }, [location])
+
     return ( 
         <header className="fixed top-0 w-full bg-slate-700 p-2 text-white z-10">
             <nav className="p-2 w-11/12 mx-auto flex justify-between items-center">

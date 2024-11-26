@@ -1,55 +1,73 @@
 import { useState } from "react";
 
 const AddQuiz = () => {
-    const [formData, setFormData] = useState({
+    const [ quizData, setquizData] = useState({
         quiz_category:'',
         quiz_difficulty:'',
         quiz_text:'',
+        quiz_answer:'',
         createdBy:''
     })
-    const[loading, setLoading]=useState(false)
-    const[error, setError]=useState(null)
+
+    const[loading, setLoading] =useState(false)
+    const[error, setError] =useState(null)
+    const{success, setSuccess} =useState(null)
 
     const handleInputChange = (e)=>{
         const {name, value} = e.target
-        setFormData({...formData, [name]:value})
+        setquizData({... quizData, [name]:value})
     }
 
     const handleSignUp = async (e)=>{
         e.preventDefault()
         setLoading(true)
-        console.log(formData);
+    
         
-        if(!formData.quiz_category || !formData.quiz_difficulty || !formData.quiz_text || !formData.createdBy){
+        if( !quizData.quiz_category || !quizData.quiz_difficulty || !quizData.quiz_text || !quizData.quiz_answer || !quizData.createdBy){
             setError("Please fill all Fields")
             setLoading(false)
             setTimeout(()=>{
                 setError("")   
-            }, 5000)
+            }, 3000)
             return
         }
         
         try {
-            const response = await fetch('/', {
+            const response = await fetch('http://localhost:3000/auth/addquiz', {
                 method:'POST',
                 headers:{
                     "Content-Type":'application/json',
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(quizData)
             })
 
-            if(!response){
-                throw new Error("Failed to Register, Try Again");     
-            }
-            
             const data = await response.json()
-            alert("Registration Successful", )
+            console.log(data);
+            
+            if(data.success){
+                setSuccess(data.message)
+                setquizData({
+                    quiz_category:'',
+                    quiz_difficulty:'',
+                    quiz_text:'',
+                    quiz_answer:'',
+                    createdBy:''
+                })
+                setTimeout(()=>{
+                    setSuccess(null)
+                }, 3000)
+            }else{
+                setError(data.message)
+                setLoading(false)
+                setTimeout(()=>{
+                    setError(null)
+                }, 3000)
+            }
+         
 
         } catch (error) {
             console.error("Error", error.message)
-        } finally{
-            setLoading(false)
-        }   
+        } 
     }
 
     return ( 
@@ -60,12 +78,15 @@ const AddQuiz = () => {
                     {error && (
                         <p className="text-red-600 text-center mt-2 font-mono">{error}</p>
                     )}
+                    {success && (
+                        <p className="text-green-600 text-center mt-2 font-mono">{success}</p>
+                    )}
                     <div className="mb-4">
                         <select 
                             name="quiz_category" 
                             id="quiz_category"  
                             className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full"
-                            value={formData.quiz_category}
+                            value={ quizData.quiz_category}
                             onChange={handleInputChange}
                         >
                             <option value="">Quiz Category</option>
@@ -84,7 +105,7 @@ const AddQuiz = () => {
                             name="quiz_difficulty" 
                             id="quiz_difficulty"  
                             className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full"
-                            value={formData.quiz_difficulty}
+                            value={ quizData.quiz_difficulty}
                             onChange={handleInputChange}
                         >
                             <option value="">Quiz Difficulty Level</option>
@@ -101,9 +122,20 @@ const AddQuiz = () => {
                             name="quiz_text" 
                             id="quiz_text" 
                             placeholder="Type Quiz"
-                            value={formData.quiz_text}
+                            value={ quizData.quiz_text}
                             onChange={handleInputChange} 
                         ></textarea>
+                    </div>
+                    <div className="my-4">
+                        <input 
+                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" 
+                            type="text" 
+                            name="answer" 
+                            id="answer" 
+                            placeholder="Answer" 
+                            value={ quizData.quiz_answer}
+                            onChange={handleInputChange} 
+                        />
                     </div>
                     <div className="my-4">
                         <input 
@@ -112,7 +144,7 @@ const AddQuiz = () => {
                             name="createdBy" 
                             id="createdBy" 
                             placeholder="Added By" 
-                            value={formData.createdBy}
+                            value={ quizData.createdBy}
                             onChange={handleInputChange} 
                         />
                     </div>

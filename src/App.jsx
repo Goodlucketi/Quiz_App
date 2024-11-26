@@ -6,6 +6,7 @@ import Register from "./views/Register";
 import Login from "./views/Login";
 import QuizCategory from "./views/QuizCategory";
 import AddQuizView from "./views/AddQuizView";
+import QuizView from "./views/QuizView"
 const App = () => {
   return ( 
     <Router>
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/signup" element = { <Register /> } />
         <Route path="/categories" element = { <QuizCategory /> } />
         <Route path="/addquiz" element = { <AddQuizView /> } />
+        <Route path="/quiz" element = { <QuizView /> } />
       </Routes>
     </Router>
    );
