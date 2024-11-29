@@ -1,167 +1,126 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 
 const AddQuiz = () => {
-    const [ quizData, setquizData] = useState({
-        quiz_category:'',
-        quiz_difficulty:'',
-        quiz_text:'',
-        quiz_answer:'',
-        createdBy:''
-    })
+    const [formData, setFormData] = useState({
+        category: '',
+        difficulty: '',
+        questions: [
+            { questionText: '', options: ['', '', '', ''], answer: '' },
+        ],
+        createdBy:'',
+    });
 
-    const[loading, setLoading] =useState(false)
-    const[error, setError] =useState(null)
-    const{success, setSuccess} =useState(null)
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-    const handleInputChange = (e)=>{
-        const {name, value} = e.target
-        setquizData({... quizData, [name]:value})
-    }
-
-    const handleSignUp = async (e)=>{
-        e.preventDefault()
-        setLoading(true)
-    
+    const handleQuestionChange = (index, key, value) => {
+        const updatedQuestions = [...formData.questions];
         
-        if( !quizData.quiz_category || !quizData.quiz_difficulty || !quizData.quiz_text || !quizData.quiz_answer || !quizData.createdBy){
-            setError("Please fill all Fields")
-            setLoading(false)
-            setTimeout(()=>{
-                setError("")   
-            }, 3000)
-            return
+        if (key.startsWith('options.')) {
+            const optionIndex = parseInt(key.split('.')[1], 10); // Extract the option index
+            updatedQuestions[index].options[optionIndex] = value; // Update the specific option
+        } else {
+            updatedQuestions[index][key] = value; // Update other keys like 'questionText' or 'answer'
         }
-        
+
+        setFormData({ ...formData, questions: updatedQuestions });
+    };
+
+    const addQuestion = () => {
+        setFormData({
+            ...formData,
+            questions: [
+                ...formData.questions,
+                { questionText: '', options: ['', '', '', ''], answer: '' },
+            ],
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const response = await fetch('http://localhost:3000/auth/addquiz', {
-                method:'POST',
-                headers:{
-                    "Content-Type":'application/json',
-                },
-                body: JSON.stringify(quizData)
-            })
+            const response = await fetch('http://localhost:3000/admin/addquiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
 
-            const data = await response.json()
-            console.log(data);
-            
-            if(data.success){
-                setSuccess(data.message)
-                setquizData({
-                    quiz_category:'',
-                    quiz_difficulty:'',
-                    quiz_text:'',
-                    quiz_answer:'',
-                    createdBy:''
-                })
-                setTimeout(()=>{
-                    setSuccess(null)
-                }, 3000)
-            }else{
-                setError(data.message)
-                setLoading(false)
-                setTimeout(()=>{
-                    setError(null)
-                }, 3000)
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+            } else {
+                throw new Error(data.error || 'Failed to add quiz.');
             }
-         
-
         } catch (error) {
-            console.error("Error", error.message)
-        } 
-    }
+            console.error('Error adding quiz:', error.message);
+            alert(error.message);
+        }
+    };
 
-    return ( 
-        <main className="signup-form h-screen">
-            <div className="w-11/12 mx-auto p-4 md:py-20">
-                <form onSubmit={handleSignUp} className="signUp bg-slate-50/70 md:w-5/12 mx-auto shadow-lg rounded-xl md:px-8 py-10 mt-10">
-                    <h2 className="text-center text-3xl my-5 font-bold text-blue-800">ADD QUIZ</h2>
-                    {error && (
-                        <p className="text-red-600 text-center mt-2 font-mono">{error}</p>
-                    )}
-                    {success && (
-                        <p className="text-green-600 text-center mt-2 font-mono">{success}</p>
-                    )}
-                    <div className="mb-4">
-                        <select 
-                            name="quiz_category" 
-                            id="quiz_category"  
-                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full"
-                            value={ quizData.quiz_category}
-                            onChange={handleInputChange}
-                        >
-                            <option value="">Quiz Category</option>
-                            <option value="html">HTML</option>
-                            <option value="css">CSS</option>
-                            <option value="javascript">Javascript</option>
-                            <option value="react">React</option>
-                            <option value="vue">Vue Js</option>
-                            <option value="angular">Angular</option>
-                            <option value="node">Node JS</option>
-                            <option value="php">PHP</option>
-                        </select>
-                    </div>
-                    <div className="my-4">
-                    <select 
-                            name="quiz_difficulty" 
-                            id="quiz_difficulty"  
-                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full"
-                            value={ quizData.quiz_difficulty}
-                            onChange={handleInputChange}
-                        >
-                            <option value="">Quiz Difficulty Level</option>
-                            <option value="easy">Easy</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="expert">Expert</option>
-                            <option value="pro">Professional</option>
-                        </select>
-                    </div>
+    return (
+        <div className='w-11/12 mx-auto p-4'>
+            <form onSubmit={handleSubmit} className='p-4 md:p-8 md:w-6/12 mx-auto'>
+                <h2 className='font-bold text-2xl text-center my-5'>Add Quiz</h2>
 
-                    <div className="my-4">
-                        <textarea 
-                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" 
-                            name="quiz_text" 
-                            id="quiz_text" 
-                            placeholder="Type Quiz"
-                            value={ quizData.quiz_text}
-                            onChange={handleInputChange} 
+                <div className='my-2 md:my-5'>
+                    <input name="category" value={formData.category} onChange={handleChange} required placeholder='Quiz Category' className='p-3 w-full rounded-lg bg-slate-50/50 shadow-md border-0' />
+                </div>
+                <div className='my-2 md:my-5'>
+                    <select name="difficulty" value={formData.difficulty} onChange={handleChange} required className='p-3 w-full rounded-lg bg-slate-50/50 shadow-md border-0'>
+                        <option value="">Select Difficulty</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Expert">Expert</option>
+                        <option value="Professional">Professional</option>
+                    </select>
+                </div>
+                <h3 className='font-bold text-lg mt-4 p-3'>Questions</h3>
+                {formData.questions.map((question, index) => (
+                    <div key={index}>
+                        <label className='px-3'>Question {index + 1}</label>
+                        <textarea
+                            type="text"
+                            value={question.questionText}
+                            onChange={(e) =>
+                                handleQuestionChange(index, 'questionText', e.target.value)
+                            }
+                            required placeholder='Type Question Here'
+                            className='p-3 w-full rounded-lg bg-slate-50/50 shadow-md border-0'
                         ></textarea>
-                    </div>
-                    <div className="my-4">
-                        <input 
-                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" 
-                            type="text" 
-                            name="answer" 
-                            id="answer" 
-                            placeholder="Answer" 
-                            value={ quizData.quiz_answer}
-                            onChange={handleInputChange} 
+                        {question.options.map((option, optIndex) => (
+                            <input
+                                key={optIndex}
+                                type="text"
+                                placeholder={`Option ${optIndex + 1}`}
+                                value={option}
+                                onChange={(e) =>
+                                    handleQuestionChange(index, `options.${optIndex}`, e.target.value)
+                                }
+                                required
+                                className='p-3 w-full rounded-lg bg-slate-50/50 shadow-md border-0 mb-1'
+                            />
+                        ))}
+                        <input
+                            type="text"
+                            placeholder="Correct Answer"
+                            value={question.answer}
+                            onChange={(e) => handleQuestionChange(index, 'answer', e.target.value)}
+                            required
+                            className='p-3 w-full rounded-lg bg-slate-50/50 shadow-md border-0 mb-5'
                         />
                     </div>
-                    <div className="my-4">
-                        <input 
-                            className="bg-transparent border-2 p-3 rounded-lg shadow-sm w-full" 
-                            type="text" 
-                            name="createdBy" 
-                            id="createdBy" 
-                            placeholder="Added By" 
-                            value={ quizData.createdBy}
-                            onChange={handleInputChange} 
-                        />
-                    </div>
-                    
-                    <div className="my-4">
-                        <button 
-                            className={`${loading?"opacity-50 cursor-not-allowed Up...":""} bg-blue-800 text-white hover:bg-blue-600 duration-500 transition-all border-2 p-3 rounded-lg shadow-sm w-full`} 
-                            type="submit" 
-                            disabled={loading}>
-                                {loading?"Uploading Quiz...":"Add Quiz"}
-                        </button>
-                        
-                    </div>
-                </form>
-            </div>
-        </main>
-     );
-}
- 
+                ))}
+                <button type="button" onClick={addQuestion} className='p-3 w-full rounded-lg bg-blue-500 text-white shadow-md border-0 my-3'>
+                    Add Another Question
+                </button>
+
+                <input type="text" name="createdBY" id="createdBy" value={formData.createdBy} onChange={handleChange} placeholder='Created By' className='p-3 w-full rounded-lg bg-slate-50/20 shadow-md border-2' />
+                <button type="submit" className='p-3 w-full rounded-lg bg-blue-700 text-white shadow-md border-0 my-3'>Submit Quiz</button>
+            </form>
+        </div>
+    );
+};
+
 export default AddQuiz;

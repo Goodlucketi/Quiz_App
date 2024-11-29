@@ -32,7 +32,7 @@ const Signup = () => {
         }
         
         try {
-            const response = await fetch('http://localhost:3000/auth/signup', {
+            const response = await fetch('https://quizapp-backend-76ko.onrender.com/auth/signup', {
                 method:'POST',
                 headers:{
                     "Content-Type":'application/json',

@@ -5,7 +5,10 @@ const AddQuizView = () => {
     return ( 
         <main>
             <Navbar />
-            <AddQuiz />
+            <div className="py-20">
+                <AddQuiz />
+            </div>
+            
         </main>
      );
 }

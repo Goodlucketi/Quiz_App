@@ -1,27 +1,113 @@
-import Navbar from "../components/Navbar";
-import QuizBody from "../components/QuizBody";
-import Quiz from "../components/QuizNav";
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const QuizView = () => {
-    return ( 
-        <main>
-            <Navbar />
-            <Quiz/>
-            <div>
-                <QuizBody quiz_sn="1" quiz="quiz1" />
-                <QuizBody quiz_sn="2" quiz="quiz2" />
-                <QuizBody quiz_sn="3" quiz="quiz3" />
-                <QuizBody quiz_sn="4" quiz="quiz4" />
-                <QuizBody quiz_sn="5" quiz="quiz5" />
-                <QuizBody quiz_sn="6" quiz="quiz6" />
-                <QuizBody quiz_sn="7" quiz="quiz7" />
-                <QuizBody quiz_sn="8" quiz="quiz8" />
-                <QuizBody quiz_sn="9" quiz="quiz9" />
-                <QuizBody quiz_sn="10" quiz="quiz10" />
+
+const QuizPage = () => {
+    const location = useLocation()
+    const navigate = useNavigate()
+
+    const quizzes = location.state?.quizzes || [];
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+    const [selectedAnswers, setSelectedAnswers] = useState({})
+    const [score, setScore] = useState(null)
+    
+    
+    const handleAnswerSelect = (answer) => {
+        setSelectedAnswers({
+            ...selectedAnswers,
+            [currentQuestionIndex]: answer,
+        });
+    };
+
+    const handleNext = () => {
+        if (currentQuestionIndex < quizzes.length - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        } else {
+            calculateScore();
+        }
+    };
+
+    const calculateScore = () => {
+        let totalScore = 0;
+        quizzes.forEach((quiz, index) => {
+            if (selectedAnswers[index] === quiz.answer) {
+                totalScore++;
+            }
+        });
+        setScore(totalScore);
+    };
+
+    const handleFinish = () => {
+        navigate('/');
+    };
+
+    if (quizzes.length === 0) {
+        return (
+            <div className="quiz-page">
+                <h2>No quizzes available</h2>
+                <button onClick={handleFinish} className="btn btn-primary">
+                    Go Back
+                </button>
             </div>
-            
-        </main>
-     );
-}
- 
-export default QuizView;
+        );
+    }
+
+    if (score !== null) {
+        return (
+            <div>
+                <h2>Quiz Completed!</h2>
+                <p>
+                    Your score: {score} out of {quizzes.length}
+                </p>
+                <button onClick={handleFinish}>Go Back to Categories</button>
+            </div>
+        );
+    }
+    const currentQuestion = quizzes[currentQuestionIndex]
+    return (
+        <div>
+            <div className="quiz-page">
+                <h1>{location.state?.category} Quiz</h1>
+                <h2>Difficulty: {location.state?.difficulty}</h2>
+                {currentQuestion && (
+                <div className="question-container">
+                        <h3>{`Q${currentQuestionIndex + 1}: ${currentQuestion.questionText}`}</h3>
+                        <ul>
+                            {currentQuestion.options.map((option, index) => (
+                                <li key={index}>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name={`question-${currentQuestionIndex}`}
+                                            value={option}
+                                            onChange={() => handleAnswerSelect(option)}
+                                            checked={
+                                                selectedAnswers[currentQuestionIndex] === option
+                                            }
+                                        />
+                                        {option}
+                                    </label>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                    
+
+                <div className="actions">
+                    <button
+                        onClick={handleNext}
+                        className=""
+                        disabled={!selectedAnswers[currentQuestionIndex]}
+                    >
+                        {currentQuestionIndex < quizzes.length - 1
+                            ? 'Next Question'
+                            : 'Finish Quiz'}
+                    </button>
+                </div>
+            </div>        
+        </div>
+    );
+};
+
+export default QuizPage;
