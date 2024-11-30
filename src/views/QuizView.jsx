@@ -64,45 +64,51 @@ const QuizPage = () => {
         );
     }
     const currentQuestion = quizzes[currentQuestionIndex]
+    const currentQuiz = quizzes[0]
+    const questions = currentQuestion.questions || []
+
+    console.log(currentQuiz);
+    console.log(questions);
+    console.log(quizzes);
+    
+    
+    
     return (
-        <div>
+        <div className='w-11/12 mx-auto p-4'>
             <div className="quiz-page">
-                <h1>{location.state?.category} Quiz</h1>
-                <h2>Difficulty: {location.state?.difficulty}</h2>
-                {currentQuestion && (
-                <div className="question-container">
-                        <h3>{`Q${currentQuestionIndex + 1}: ${currentQuestion.questionText}`}</h3>
-                        <ul>
-                            {currentQuestion.options.map((option, index) => (
-                                <li key={index}>
+                <h1>{currentQuestion.category} Quiz</h1>
+                <h2>Difficulty: {currentQuestion.difficulty}</h2>
+                {questions.map((question, questionIndex)=>(
+                <div className="question-container my-3 shadow-md px-2 md:px-4 py-4 rounded-md bg-slate-50/50">
+                        <h3>{`Q${questionIndex + 1}: ${question.questionText}`}</h3>
+                        <ul className='md:mx-8'>
+                            {question.options.map((option, optionIndex) => (
+                                <li key={optionIndex}>
                                     <label>
                                         <input
                                             type="radio"
-                                            name={`question-${currentQuestionIndex}`}
+                                            name={`question-${questionIndex}`}
                                             value={option}
                                             onChange={() => handleAnswerSelect(option)}
                                             checked={
-                                                selectedAnswers[currentQuestionIndex] === option
+                                                selectedAnswers[questionIndex] === option
                                             }
-                                        />
-                                        {option}
+                                        /> &nbsp;
+                                         {option}
                                     </label>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                )}
+                ))}
                     
 
-                <div className="actions">
+                <div className="actions p-4 bg-blue-700 text-center text-white rounded-lg">
                     <button
-                        onClick={handleNext}
+                        onClick={calculateScore}
                         className=""
                         disabled={!selectedAnswers[currentQuestionIndex]}
-                    >
-                        {currentQuestionIndex < quizzes.length - 1
-                            ? 'Next Question'
-                            : 'Finish Quiz'}
+                    >Finish Quiz
                     </button>
                 </div>
             </div>        
