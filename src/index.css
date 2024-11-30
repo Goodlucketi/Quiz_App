@@ -11,6 +11,7 @@
 body{
   background: url('./assets/images/tech.jpg') no-repeat;
   background-size: cover;
+  background-attachment: fixed;
 }
 
 input:checked+.label{

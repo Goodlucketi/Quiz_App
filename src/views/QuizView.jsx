@@ -6,31 +6,28 @@ const QuizPage = () => {
     const location = useLocation()
     const navigate = useNavigate()
 
-    const quizzes = location.state?.quizzes || [];
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
     const [selectedAnswers, setSelectedAnswers] = useState({})
     const [score, setScore] = useState(null)
     
-    
-    const handleAnswerSelect = (answer) => {
+    const quizzes = location.state?.quizzes || [];
+    const currentQuestion = quizzes[currentQuestionIndex]
+    const questions = currentQuestion.questions || []
+
+
+    const handleAnswerSelect = (questionIndex, answer) => {
         setSelectedAnswers({
             ...selectedAnswers,
-            [currentQuestionIndex]: answer,
+            [questionIndex]: answer,
         });
     };
 
-    const handleNext = () => {
-        if (currentQuestionIndex < quizzes.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-        } else {
-            calculateScore();
-        }
-    };
+ 
 
     const calculateScore = () => {
         let totalScore = 0;
-        quizzes.forEach((quiz, index) => {
-            if (selectedAnswers[index] === quiz.answer) {
+        questions.forEach((question, index) => {
+            if (selectedAnswers[index] === question.answer) {
                 totalScore++;
             }
         });
@@ -38,14 +35,15 @@ const QuizPage = () => {
     };
 
     const handleFinish = () => {
-        navigate('/');
+        calculateScore()       
+        navigate('/categories');
     };
 
     if (quizzes.length === 0) {
         return (
             <div className="quiz-page">
                 <h2>No quizzes available</h2>
-                <button onClick={handleFinish} className="btn btn-primary">
+                <button onClick={handleFinish} className="p-4 rounded-md text-white bg-blue-700">
                     Go Back
                 </button>
             </div>
@@ -54,22 +52,20 @@ const QuizPage = () => {
 
     if (score !== null) {
         return (
-            <div>
+            <div className='p-4 w-11/12 mx-auto md:w-5/12'>
                 <h2>Quiz Completed!</h2>
                 <p>
-                    Your score: {score} out of {quizzes.length}
+                    Your score: {score} out of {questions.length}
                 </p>
                 <button onClick={handleFinish}>Go Back to Categories</button>
             </div>
         );
     }
-    const currentQuestion = quizzes[currentQuestionIndex]
-    const currentQuiz = quizzes[0]
-    const questions = currentQuestion.questions || []
+    
 
-    console.log(currentQuiz);
-    console.log(questions);
-    console.log(quizzes);
+    // console.log(currentQuiz);
+    // console.log(questions);
+    // console.log(quizzes);
     
     
     
@@ -89,7 +85,7 @@ const QuizPage = () => {
                                             type="radio"
                                             name={`question-${questionIndex}`}
                                             value={option}
-                                            onChange={() => handleAnswerSelect(option)}
+                                            onChange={() => handleAnswerSelect(questionIndex, option)}
                                             checked={
                                                 selectedAnswers[questionIndex] === option
                                             }
@@ -107,7 +103,7 @@ const QuizPage = () => {
                     <button
                         onClick={calculateScore}
                         className=""
-                        disabled={!selectedAnswers[currentQuestionIndex]}
+                        
                     >Finish Quiz
                     </button>
                 </div>
